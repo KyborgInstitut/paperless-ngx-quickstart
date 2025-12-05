@@ -1,0 +1,141 @@
+services:
+  broker:
+    image: redis:7
+    restart: unless-stopped
+    volumes:
+      - ./data/redis:/data
+    command: redis-server --appendonly yes --maxmemory ${REDIS_CACHE_SIZE:-512}mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./config/postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    environment:
+      POSTGRES_DB: paperless
+      POSTGRES_USER: paperless
+      POSTGRES_PASSWORD: ${PAPERLESS_DB_PASSWORD:-paperless}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U paperless -d paperless"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  webserver:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      broker:
+        condition: service_healthy
+      gotenberg:
+        condition: service_started
+      tika:
+        condition: service_started
+    expose:
+      - "8000"
+    volumes:
+      # Application data (SQLite fallback, index, classification models)
+      - ./data/data:/usr/src/paperless/data
+      # Media files (original documents, thumbnails, archive)
+      - ./data/media:/usr/src/paperless/media
+      # Consumption directory - drop files here to import
+      - ./consume:/usr/src/paperless/consume
+      # Export directory for document exporter
+      - ./export:/usr/src/paperless/export
+      # Trash directory
+      - ./trash:/usr/src/paperless/trash
+      # Custom scripts (pre/post consumption)
+      - ./scripts:/usr/src/paperless/scripts
+    environment:
+      # Database
+      PAPERLESS_DBHOST: db
+      PAPERLESS_DBNAME: paperless
+      PAPERLESS_DBUSER: paperless
+      PAPERLESS_DBPASS: ${PAPERLESS_DB_PASSWORD:-paperless}
+
+      # Redis - Task Queue
+      PAPERLESS_REDIS: redis://broker:6379
+
+      # Redis - Caching (performance optimization)
+      PAPERLESS_REDIS_CACHE: redis://broker:6379
+
+      # Security - generate with: openssl rand -base64 32
+      PAPERLESS_SECRET_KEY: ${PAPERLESS_SECRET_KEY:-change-me-to-a-long-random-string}
+
+      # Admin credentials (only used on first run)
+      PAPERLESS_ADMIN_USER: ${PAPERLESS_ADMIN_USER:-admin}
+      PAPERLESS_ADMIN_PASSWORD: ${PAPERLESS_ADMIN_PASSWORD:-admin}
+
+      # OCR Settings
+      PAPERLESS_OCR_LANGUAGE: ${PAPERLESS_OCR_LANGUAGE:-eng}
+      PAPERLESS_OCR_PAGES: ${PAPERLESS_OCR_PAGES:-0}
+      PAPERLESS_OCR_MODE: ${PAPERLESS_OCR_MODE:-skip}
+
+      # Timezone
+      PAPERLESS_TIME_ZONE: ${PAPERLESS_TIME_ZONE:-UTC}
+
+      # Tika & Gotenberg for Office docs
+      PAPERLESS_TIKA_ENABLED: "true"
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+      PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+
+      # Trash
+      PAPERLESS_EMPTY_TRASH_DIR: /usr/src/paperless/trash
+
+      # Consumer Settings
+      PAPERLESS_CONSUMER_RECURSIVE: "true"
+      PAPERLESS_CONSUMER_SUBDIRS_AS_TAGS: "true"
+      PAPERLESS_CONSUMER_POLLING: ${PAPERLESS_CONSUMER_POLLING:-0}
+      PAPERLESS_CONSUMER_POLLING_DELAY: ${PAPERLESS_CONSUMER_POLLING_DELAY:-5}
+      PAPERLESS_CONSUMER_POLLING_RETRY_COUNT: ${PAPERLESS_CONSUMER_POLLING_RETRY_COUNT:-5}
+
+      # Performance Settings - Workers
+      PAPERLESS_WEBSERVER_WORKERS: ${PAPERLESS_WEBSERVER_WORKERS:-2}
+      PAPERLESS_TASK_WORKERS: ${PAPERLESS_TASK_WORKERS:-2}
+
+      # Performance Settings - Indexing
+      PAPERLESS_INDEX_TASK_DELAY: ${PAPERLESS_INDEX_TASK_DELAY:-300}
+
+      # Performance Settings - Thumbnails
+      PAPERLESS_THUMBNAIL_FONT_NAME: ${PAPERLESS_THUMBNAIL_FONT_NAME:-/usr/share/fonts/liberation/LiberationSerif-Regular.ttf}
+
+      # URL - set by management script based on SSL mode
+      PAPERLESS_URL: ${PAPERLESS_URL:-http://localhost}
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    depends_on:
+      - webserver
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  gotenberg:
+    image: gotenberg/gotenberg:8
+    restart: unless-stopped
+    command:
+      - "gotenberg"
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
+
+  tika:
+    image: apache/tika:latest
+    restart: unless-stopped
