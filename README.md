@@ -1,6 +1,22 @@
 # Paperless-ngx Quick Start
 
+<p align="center">
+  <strong>A project by Kyborg Institut & Research</strong><br>
+  <em>Free tools for free people</em>
+</p>
+
+<p align="center">
+  <a href="https://kyborg-institut.com">Website</a> •
+  <a href="AUTHOR.md">About the Author</a> •
+  <a href="#support-our-work">Support</a> •
+  <a href="LICENSE">MIT License</a>
+</p>
+
+---
+
 A comprehensive management tool for deploying and managing Paperless-ngx on Ubuntu 24.04 LTS. This project provides an interactive, beginner-friendly interface while offering advanced features for experienced users.
+
+**Why this tool?** Created out of practical necessity - managing documents, GoBD compliance, and bureaucracy for small businesses shouldn't require expensive proprietary software or a dedicated IT department. This tool gives you professional-grade document management in minutes, not months.
 
 ## Features
 
@@ -17,7 +33,7 @@ A comprehensive management tool for deploying and managing Paperless-ngx on Ubun
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/paperless-ngx-quickstart.git
+git clone https://github.com/kyborginstitut/paperless-ngx-quickstart.git
 cd paperless-ngx-quickstart
 
 # Run the management tool
@@ -428,16 +444,43 @@ Contributions are welcome! Please:
 
 ## License
 
-MIT License - See LICENSE file for details.
+MIT License - See [LICENSE](LICENSE) file for details.
 
-## Support
+## Support Our Work
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/paperless-ngx-quickstart/issues)
-- **Paperless-ngx Documentation**: [docs.paperless-ngx.com](https://docs.paperless-ngx.com)
+If this tool has helped you, consider:
+
+- **Star this repo** - It helps others discover the project
+- **Share** - Tell colleagues, friends, or your network
+- **Contribute** - Submit improvements, translations, or documentation
+- **Report issues** - Help us improve by reporting bugs or suggesting features
+
+**Get Help:**
+- [GitHub Issues](https://github.com/kyborginstitut/paperless-ngx-quickstart/issues)
+- [Paperless-ngx Documentation](https://docs.paperless-ngx.com)
+
+**Connect with Kyborg Institut:**
+- Website: [kyborg-institut.com](https://kyborg-institut.com)
+- Social Media: [@kyborginstitut](https://instagram.com/kyborginstitut)
 
 ## Acknowledgments
 
-- [Paperless-ngx](https://github.com/paperless-ngx/paperless-ngx) - The document management system
+- [Paperless-ngx](https://github.com/paperless-ngx/paperless-ngx) - The excellent document management system
 - [Docker](https://www.docker.com/) - Container platform
 - [PostgreSQL](https://www.postgresql.org/) - Database
 - [Redis](https://redis.io/) - Caching
+- [Claude AI](https://anthropic.com) - Development assistance
+
+---
+
+<p align="center">
+  <strong>Kyborg Institut & Research</strong><br>
+  <em>Founded by Detlef Harald Alke • Continued by Tobias O. R. Alke, M.A.</em><br><br>
+  <a href="https://kyborg-institut.com">kyborg-institut.com</a> •
+  <a href="https://github.com/kyborginstitut">GitHub</a> •
+  <a href="https://instagram.com/kyborginstitut">@kyborginstitut</a>
+</p>
+
+<p align="center">
+  <em>In the spirit of true altruism: freely given, freely received.</em>
+</p>

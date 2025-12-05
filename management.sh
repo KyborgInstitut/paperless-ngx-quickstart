@@ -287,6 +287,7 @@ EOF
     echo -e "${NC}"
     echo ""
     echo -e "  ${GREEN}Document Management System - Quick Start${NC}"
+    echo -e "  ${BLUE}by Kyborg Institut & Research${NC} - kyborg-institut.com"
 
     # Show time sync status (small, non-intrusive)
     case "${TIME_SYNC_STATUS:-}" in
