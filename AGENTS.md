@@ -3,7 +3,7 @@
 > **Für jeden Agenten, der in diesem Repo arbeitet** — Claude Code, Codex, Grok Build oder ein anderer.
 > Lies diese Datei, bevor du eine Datei änderst.
 >
-> *Erzeugt aus der zentralen Agenten-Vorlage am 2026-10-03.*
+> *Erzeugt aus der zentralen Agenten-Vorlage am 2026-10-10.*
 
 ## Sperrliste — zuerst lesen
 
@@ -22,5 +22,7 @@ Quick-Start für Paperless-ngx — freies Werkzeug unter MIT-Lizenz, veröffentl
 - **Ein Thema, ein Commit.**
 - **Beispiele erfinden** (Namen, Adressen, Daten) — nie aus echten Systemen ableiten.
 - **Im Zweifel nicht committen und nachfragen.**
+- **Nur benannte Dateien committen** (`git add <datei>`, nie `-A`/`-a`); **gepusht wird nur nach Rückfrage beim Inhaber.**
+- **Veröffentlichte Geschichte nie umschreiben** — kein `rebase`, `reset`, `--force`, `--amend` auf Gepushtem.
 
 <!-- ab hier von Hand — wird beim Neuerzeugen nicht angetastet -->
